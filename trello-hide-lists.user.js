@@ -1,30 +1,38 @@
 // ==UserScript==
-// @name         Trello Hide Lists
-// @namespace    https://github.com/shesek/trello-hide-lists
-// @version      0.1
-// @description  Trello Hist Lists
-// @author       You
-// @match        https://trello.com/b/*
-// @grant        none
-//
-// Copied from FooBarWidget @ https://github.com/shesek/trello-hide-lists/issues
+// @name        Trello Hide Lists
+// @namespace   http://trello.com/*
+// @description Trello Hide Lists (without having to archive)
+// @include     /^https?://trello\.com/.*$/
+// @grant       none
+// @version     1.0.0
+// @license     TODO
+// Additional credits to :
+// * https://github.com/shesek/trello-hide-lists
+// * FooBarWidget @ https://github.com/shesek/trello-hide-lists/issues/1#issuecomment-199693936
 //
 // ==/UserScript==
-/* jshint -W097 */
-'use strict';
+
 
 (function () {
-    function start() {
+
+
+    function AddMinimizeButtons() {
+
         var closeList = function (list) {
-            list.querySelector('.list-cards').style.display = 'none';
+            list.style.transition   = 'max-height 0.2s ease-in-out, max-width .2s 0.21s ease-in-out';
+            list.style.maxHeight    = '30px';
         };
 
         var openList = function (list) {
-            list.querySelector('.list-cards').style.display = 'block';
+            list.style.transition   = 'max-height .2s 0.2s ease-in-out, max-width .1s ease-in-out';
+            list.style.overflow     = 'hidden';
+            list.style.maxHeight    = '100%';
         };
 
-        var lists = document.getElementById('board').querySelectorAll('div.js-li
+        // Get all of the lists for the current board
+        var lists = document.getElementById('board').querySelectorAll('div.list');
 
+        // Add the show/hide selectors to each list (and update it's default show/hide state)
         for (var i = 0; i < lists.length; i++) {
             (function () {
                 var list    = lists[i];
@@ -33,22 +41,76 @@
                 openList(list);
 
                 close.setAttribute('href', '#');
-                close.setAttribute('class', 'close icon-sm dark-hover');
+                close.setAttribute('class', 'close');
 
-                close.innerHTML             = '&times;';
+                close.innerHTML             = '&blacktriangledown;';
+                close.style.textDecoration  = 'none';
+                close.style.left            = '2px';
+                close.style.top             = '2px';
+                close.style.opacity         = '0.40';
+
+
+                // Locate the show/hide button next to the list's menu button
+                // TODO : consider moving it to the left of the list name in the header
+                var attachElements = list.getElementsByClassName('list-header-extras-menu');
+
+                // Attach the show/hide click handler
+                if (attachElements.length >=0) {
+
+                    attachElements[0].parentNode.insertBefore(close, attachElements[0]);
+
+                    // TODO : convert to non-inline functions
+                    close.addEventListener('click', function (e) {
+                        e.preventDefault();
+
+                        if (close.getAttribute('class') == 'close') {
+                            closeList(list);
+                            close.setAttribute('class', 'open');
+                            close.innerHTML = '&blacktriangle;';
+                        }
+                        else {
+                            openList(list);
+                            close.setAttribute('class', 'close');
+                            close.innerHTML = '&blacktriangledown;';
+                        }
+                    });
+
+
+                    // Determine default hide/show state based on presence of "--"
+                    var headingElements = list.getElementsByClassName('list-header-name');
+
+                    if (headingElements.length >=0) {
+
+                        var collapseTokenMatch  = /.*-.*/i.exec(headingElements[0].value);
+
+                        // If a match was found then collapse the list by default
+                        if (collapseTokenMatch != null) {
+                            // TODO : consolidate to function
+                            closeList(list);
+                            close.setAttribute('class', 'open');
+                            close.innerHTML = '&blacktriangleleft;';
+
+                        }
                     }
-                });
+
+                }
             })();
         }
     }
 
-    function checkReady() {
-        if (document.getElementById('board')) {
-            start();
-        } else {
-            setTimeout(checkReady, 100);
-        }
-    }
 
-    setTimeout(checkReady, 100);
+    // TODO : Consider adding a mutation observer
+    window.addEventListener ("load", AddMinimizeButtons, false);
+
+    // Using Load event instead
+    // function checkReady() {
+    //    if (document.getElementById('board')) {
+    //       start();
+    //     } else {
+    //         setTimeout(checkReady, 100);
+    //     }
+    // }
+    //
+    // setTimeout(checkReady, 100);
+
 })();
