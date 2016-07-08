@@ -32,32 +32,41 @@
         // Get all of the lists for the current board
         var lists = document.getElementById('board').querySelectorAll('div.list');
 
-        // Add the show/hide selectors to each list (and update it's default show/hide state)
+        // Add the show/hide selectors to each list (and update the default show/hide state)
         for (var i = 0; i < lists.length; i++) {
             (function () {
                 var list    = lists[i];
+                // Close button element and a container Div for it
                 var close   = document.createElement('a');
+                var closeDiv   = document.createElement('div');
 
                 openList(list);
 
                 close.setAttribute('href', '#');
                 close.setAttribute('class', 'close');
 
+                // Use a Triangle HTML character for the close button
                 close.innerHTML             = '&blacktriangledown;';
                 close.style.textDecoration  = 'none';
-                close.style.left            = '2px';
-                close.style.top             = '2px';
                 close.style.opacity         = '0.40';
+                close.style.fontSize        = '15pt';
 
+                // Add the Close button to a container Div and set the position
+                closeDiv.appendChild(close);
+                closeDiv.style.position      = 'absolute';
+                closeDiv.style.top           = '6px';
 
-                // Locate the show/hide button next to the list's menu button
-                // TODO : consider moving it to the left of the list name in the header
-                var attachElements = list.getElementsByClassName('list-header-extras-menu');
+                // Locate the show/hide button left of the list header name text field
+                var attachElements = list.getElementsByClassName('list-header-name');
+
 
                 // Attach the show/hide click handler
                 if (attachElements.length >=0) {
 
-                    attachElements[0].parentNode.insertBefore(close, attachElements[0]);
+                    // Bump the list header name to the right so there is room for the Close button
+                    // then insert the button before it
+                    attachElements[0].style.paddingLeft = '20px';
+                    attachElements[0].parentNode.insertBefore(closeDiv, attachElements[0]);
 
                     // TODO : convert to non-inline functions
                     close.addEventListener('click', function (e) {
@@ -66,7 +75,7 @@
                         if (close.getAttribute('class') == 'close') {
                             closeList(list);
                             close.setAttribute('class', 'open');
-                            close.innerHTML = '&blacktriangle;';
+                            close.innerHTML = '&blacktriangleright;';
                         }
                         else {
                             openList(list);
@@ -88,7 +97,7 @@
                             // TODO : consolidate to function
                             closeList(list);
                             close.setAttribute('class', 'open');
-                            close.innerHTML = '&blacktriangleleft;';
+                            close.innerHTML = '&blacktriangleright;';
 
                         }
                     }
