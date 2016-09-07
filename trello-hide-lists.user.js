@@ -43,7 +43,7 @@
                 openList(list);
 
                 close.setAttribute('href', '#');
-                close.setAttribute('class', 'close');
+                close.setAttribute('class', 'toggle-list-opened');
 
                 // Use a Triangle HTML character for the close button
                 close.innerHTML             = '&blacktriangledown;';
@@ -68,23 +68,24 @@
                     attachElements[0].style.paddingLeft = '20px';
                     attachElements[0].parentNode.insertBefore(closeDiv, attachElements[0]);
 
-                    // TODO : convert to non-inline functions
+                    // TODO : convert to non-inline toggle function
                     close.addEventListener('click', function (e) {
                         e.preventDefault();
 
-                        if (close.getAttribute('class') == 'close') {
+                        if (close.getAttribute('class') == 'toggle-list-opened') {
                             closeList(list);
-                            close.setAttribute('class', 'open');
+                            close.setAttribute('class', 'toggle-list-closed');
                             close.innerHTML = '&blacktriangleright;';
                         }
                         else {
                             openList(list);
-                            close.setAttribute('class', 'close');
+                            close.setAttribute('class', 'toggle-list-opened');
                             close.innerHTML = '&blacktriangledown;';
                         }
                     });
 
 
+                    // TODO : Move this to a function
                     // Determine default hide/show state based on presence of "--"
                     var headingElements = list.getElementsByClassName('list-header-name');
 
@@ -96,7 +97,7 @@
                         if (collapseTokenMatch != null) {
                             // TODO : consolidate to function
                             closeList(list);
-                            close.setAttribute('class', 'open');
+                            close.setAttribute('class', 'toggle-list-closed');
                             close.innerHTML = '&blacktriangleright;';
 
                         }
@@ -121,5 +122,75 @@
     // }
     //
     // setTimeout(checkReady, 100);
+
+
+
+
+
+
+function AddToggleAutoButton() {
+
+    //// rename class to list-close-hide
+    // trigger open or close event on all of the ones that match the "--"
+    var toggleAutoAnchor   = document.createElement('a');
+
+    toggleAutoAnchor.setAttribute('href', '#');
+    toggleAutoAnchor.setAttribute('class', 'toggle-auto-close board-header-btn');
+    toggleAutoAnchor.innerHTML   = '-- / ++';
+    toggleAutoAnchor.style.paddingLeft      = '10px';
+    toggleAutoAnchor.style.paddingRight      = '20px';
+
+    document.getElementById('permission-level').parentNode.appendChild(toggleAutoAnchor);
+
+
+
+
+// ---------
+
+
+    var toggleAutoLists = function (e) {
+        e.preventDefault();
+
+        // TODO : Move this to a function
+
+        // Get all of the lists for the current board
+        // TODO : simplify this and only retrieve lists that have -- in the name
+
+        var lists = document.getElementById('board').querySelectorAll('div.list');
+
+        for (var i = 0; i < lists.length; i++) {
+            var list    = lists[i];
+
+
+//            var headingElements = list[i].getElementsByClassName('.list-header-name[value*=--]');
+            // Determine default hide/show state based on presence of "--"
+            var headingElements = list.getElementsByClassName('list-header-name');
+
+            if (headingElements.length >=0) {
+
+                var collapseTokenMatch  = /.*-.*/i.exec(headingElements[0].value);
+
+                if (collapseTokenMatch != null) {
+
+                    var closeButtons = list.querySelectorAll('[class*=toggle-list]');
+
+                    if (closeButtons.length >=0) {
+                        // Self click the toggle button
+                        closeButtons[0].click();
+                    }
+
+                }
+            }
+        }
+    }
+
+    toggleAutoAnchor.addEventListener('click', toggleAutoLists );
+
+
+// ------------
+};
+
+        window.addEventListener ("load", AddToggleAutoButton, false);
+
 
 })();
