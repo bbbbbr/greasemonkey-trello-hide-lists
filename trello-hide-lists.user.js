@@ -154,19 +154,24 @@
     //
     function AddToggleAutoButton()
     {
-        var toggleAutoAnchor   = document.createElement('a');
 
-        toggleAutoAnchor.setAttribute(          'href', '#');
-        toggleAutoAnchor.setAttribute(          'class', 'toggle-list-close-hide-button board-header-btn');
-        toggleAutoAnchor.innerHTML              = '-- / ++';
-        toggleAutoAnchor.style.paddingLeft      = '10px';
-        toggleAutoAnchor.style.paddingRight     = '20px';
+        if (!document.getElementById('toggleAutoAnchorButton')) {
 
-        // Add the button right after (to the right) of the board permission selector
-        document.getElementById('permission-level').parentNode.appendChild(toggleAutoAnchor);
+            var toggleAutoAnchor   = document.createElement('a');
 
-        // When clicked : trigger open or close event on all of the boards that match the "--"
-        toggleAutoAnchor.addEventListener('click', toggleAutoLists );
+            toggleAutoAnchor.setAttribute(          'href', '#');
+            toggleAutoAnchor.setAttribute(          'class', 'toggle-list-close-hide-button board-header-btn');
+            toggleAutoAnchor.innerHTML              = '-- / ++';
+            toggleAutoAnchor.style.paddingLeft      = '10px';
+            toggleAutoAnchor.style.paddingRight     = '20px';
+
+            // Add the button right after (to the right) of the board permission selector
+            document.getElementById('permission-level').parentNode.appendChild(toggleAutoAnchor);
+
+            // When clicked : trigger open or close event on all of the boards that match the "--"
+            toggleAutoAnchor.addEventListener('click', toggleAutoLists );
+            toggleAutoAnchor.setAttribute("id", "toggleAutoAnchorButton");
+        }
     };
 
 
@@ -214,7 +219,6 @@
        if (document.getElementById('board')) {
           AddMinimizeButtons();
           AddToggleAutoButton();
-
 
         } else {
             setTimeout(checkReady, 100);
