@@ -109,49 +109,13 @@
     }
 
 
-    // TODO : Consider adding a mutation observer
-    window.addEventListener ("load", AddMinimizeButtons, false);
-
-    // Using Load event instead
-    // function checkReady() {
-    //    if (document.getElementById('board')) {
-    //       start();
-    //     } else {
-    //         setTimeout(checkReady, 100);
-    //     }
-    // }
-    //
-    // setTimeout(checkReady, 100);
 
 
 
 
-
-
-function AddToggleAutoButton() {
-
-    //// rename class to list-close-hide
-    // trigger open or close event on all of the ones that match the "--"
-    var toggleAutoAnchor   = document.createElement('a');
-
-    toggleAutoAnchor.setAttribute('href', '#');
-    toggleAutoAnchor.setAttribute('class', 'toggle-auto-close board-header-btn');
-    toggleAutoAnchor.innerHTML   = '-- / ++';
-    toggleAutoAnchor.style.paddingLeft      = '10px';
-    toggleAutoAnchor.style.paddingRight      = '20px';
-
-    document.getElementById('permission-level').parentNode.appendChild(toggleAutoAnchor);
-
-
-
-
-// ---------
-
-
-    var toggleAutoLists = function (e) {
+    function toggleAutoLists(e)
+    {
         e.preventDefault();
-
-        // TODO : Move this to a function
 
         // Get all of the lists for the current board
         // TODO : simplify this and only retrieve lists that have -- in the name
@@ -161,8 +125,8 @@ function AddToggleAutoButton() {
         for (var i = 0; i < lists.length; i++) {
             var list    = lists[i];
 
+            // var headingElements = list[i].getElementsByClassName('.list-header-name[value*=--]');
 
-//            var headingElements = list[i].getElementsByClassName('.list-header-name[value*=--]');
             // Determine default hide/show state based on presence of "--"
             var headingElements = list.getElementsByClassName('list-header-name');
 
@@ -184,13 +148,116 @@ function AddToggleAutoButton() {
         }
     }
 
-    toggleAutoAnchor.addEventListener('click', toggleAutoLists );
 
 
-// ------------
-};
+    //
+    // Add a button near the top to toggle showing/hiding all boards with "--' in the name
+    //
+    function AddToggleAutoButton() {
 
-        window.addEventListener ("load", AddToggleAutoButton, false);
+        //// rename class to list-close-hide
+        // trigger open or close event on all of the boards that match the "--"
+        var toggleAutoAnchor   = document.createElement('a');
+
+        toggleAutoAnchor.setAttribute('href', '#');
+        toggleAutoAnchor.setAttribute('class', 'toggle-auto-close board-header-btn');
+        toggleAutoAnchor.innerHTML   = '-- / ++';
+        toggleAutoAnchor.style.paddingLeft      = '10px';
+        toggleAutoAnchor.style.paddingRight      = '20px';
+
+        document.getElementById('permission-level').parentNode.appendChild(toggleAutoAnchor);
+
+        toggleAutoAnchor.addEventListener('click', toggleAutoLists );
+    };
+
+
+
+    //
+    // Util : Installs a mutation observer callback for nodes matching the given css selector
+    //
+    function registerMutationObserver(selectorCriteria, monitorSubtree, callbackFunction)
+    {
+        // Cross browser mutation observer support
+        var MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver;
+
+        // Find the requested DOM nodes
+        var targetNodeList = document.querySelectorAll(selectorCriteria);
+
+
+        // Make sure the required elements were found, otherwise don't install the observer
+        if ((targetNodeList != null) && (MutationObserver != null)) {
+
+            // Create an observer and callback
+            var observer = new MutationObserver( callbackFunction );
+
+            // Start observing the target element(s)
+            for(var i = 0; i < targetNodeList.length; ++i) {
+
+                observer.observe(targetNodeList[i], {
+                    attributes: true,
+                    childList: true,
+                    characterData: true,
+                    subtree: monitorSubtree,
+                    characterDataOldValue: true
+                });
+            }
+        }
+    }
+
+
+    //
+    // Set a timer to wait until the board is loaded before running the script
+    // Use this plus the mutation observer instead of purely the load event
+    // since the load event misses page loads and board changes sometimes
+    //
+    function checkReady() {
+
+       if (document.getElementById('board')) {
+          AddMinimizeButtons();
+          AddToggleAutoButton();
+
+
+        } else {
+            setTimeout(checkReady, 100);
+        }
+    }
+
+
+    //
+    // Once logged in, the actively displayed board can change without a page load.
+    // Register a hook to trigger on changes to the "content" div which is the container
+    // for the boards, then re-apply the script as needed
+    //
+    function installBoardChangeHook()
+    {
+        // TODO : debug visual hook hinting
+        // if (document.getElementById('content'))
+        //    document.getElementById('content').style.border  = "1px dashed red";
+
+        // Subtree monitoring disabled to avoid excessive triggering
+        registerMutationObserver('[id=content]', false,
+            function(mutations)
+            {
+                setTimeout(checkReady, 100);
+            }
+        );
+    }
+
+
+    //
+    // Apply the script to the newly loaded board and try
+    // to capture any future non-page-reload board changes
+    //
+    function init()
+    {
+        setTimeout(checkReady, 100);
+        installBoardChangeHook();
+    }
+
+
+
+    // Add an event to start the script once the page has loaded
+    window.addEventListener ("load", init, false);
 
 
 })();
