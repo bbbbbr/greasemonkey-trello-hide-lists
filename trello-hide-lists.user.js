@@ -112,31 +112,30 @@
 
 
 
-
+    //
+    // Toggle showing/hiding all boards with "--' in the name
+    //
     function toggleAutoLists(e)
     {
         e.preventDefault();
 
         // Get all of the lists for the current board
-        // TODO : simplify this and only retrieve lists that have -- in the name
-
         var lists = document.getElementById('board').querySelectorAll('div.list');
 
         for (var i = 0; i < lists.length; i++) {
-            var list    = lists[i];
 
-            // var headingElements = list[i].getElementsByClassName('.list-header-name[value*=--]');
-
-            // Determine default hide/show state based on presence of "--"
-            var headingElements = list.getElementsByClassName('list-header-name');
+            // Can't simplify this with a [value$="--"] selector since textareas don't support it
+            // Check the heading textarea for each board, toggle it based on presence of "--"
+            var headingElements = lists[i].getElementsByClassName('list-header-name');
 
             if (headingElements.length >=0) {
 
-                var collapseTokenMatch  = /.*-.*/i.exec(headingElements[0].value);
+                // If the list header name has "--" present then click it's show/hide button
+                var collapseTokenMatch  = /.*\-\-.*/i.exec(headingElements[0].value);
 
                 if (collapseTokenMatch != null) {
 
-                    var closeButtons = list.querySelectorAll('[class*=toggle-list]');
+                    var closeButtons = lists[i].querySelectorAll('[class*=toggle-list]');
 
                     if (closeButtons.length >=0) {
                         // Self click the toggle button
@@ -153,20 +152,20 @@
     //
     // Add a button near the top to toggle showing/hiding all boards with "--' in the name
     //
-    function AddToggleAutoButton() {
-
-        //// rename class to list-close-hide
-        // trigger open or close event on all of the boards that match the "--"
+    function AddToggleAutoButton()
+    {
         var toggleAutoAnchor   = document.createElement('a');
 
-        toggleAutoAnchor.setAttribute('href', '#');
-        toggleAutoAnchor.setAttribute('class', 'toggle-auto-close board-header-btn');
-        toggleAutoAnchor.innerHTML   = '-- / ++';
+        toggleAutoAnchor.setAttribute(          'href', '#');
+        toggleAutoAnchor.setAttribute(          'class', 'toggle-list-close-hide-button board-header-btn');
+        toggleAutoAnchor.innerHTML              = '-- / ++';
         toggleAutoAnchor.style.paddingLeft      = '10px';
-        toggleAutoAnchor.style.paddingRight      = '20px';
+        toggleAutoAnchor.style.paddingRight     = '20px';
 
+        // Add the button right after (to the right) of the board permission selector
         document.getElementById('permission-level').parentNode.appendChild(toggleAutoAnchor);
 
+        // When clicked : trigger open or close event on all of the boards that match the "--"
         toggleAutoAnchor.addEventListener('click', toggleAutoLists );
     };
 
