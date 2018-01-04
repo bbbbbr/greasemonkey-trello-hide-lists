@@ -4,7 +4,7 @@
 // @description Trello Hide Lists (without having to archive)
 // @include     /^https?://trello\.com/.*$/
 // @grant       none
-// @version     1.0.0
+// @version     1.0.1
 // @license     GPL-3.0
 // Additional credits to :
 // * https://github.com/shesek/trello-hide-lists
