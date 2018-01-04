@@ -259,8 +259,14 @@
 
 
 
+    // TODO : Fix Me
+    // Firefox 57 no longer supports window.addEventListener()
+    // For the time being work around by calling init() directly.
+    // That won't capture page event loads though. A new listener/observer
+    // may be required.
+    //
     // Add an event to start the script once the page has loaded
-    window.addEventListener ("load", init, false);
-
+    // window.addEventListener ("load", init, false);
+    init();
 
 })();
