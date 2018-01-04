@@ -5,7 +5,7 @@
 // @include     /^https?://trello\.com/.*$/
 // @grant       none
 // @version     1.0.0
-// @license     TODO
+// @license     GPL
 // Additional credits to :
 // * https://github.com/shesek/trello-hide-lists
 // * FooBarWidget @ https://github.com/shesek/trello-hide-lists/issues/1#issuecomment-199693936
